@@ -20,7 +20,6 @@ import argparse
 from datetime import datetime
 from tqdm import tqdm
 
-
 def Main():
     parser = argparse.ArgumentParser(
         description="Calibrate stereo camera using captured chessboard patterns")

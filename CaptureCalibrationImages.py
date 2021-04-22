@@ -15,11 +15,15 @@ arguments:
 from datetime import datetime
 import argparse
 import os
+
 import cv2
 from tqdm import tqdm
+from misc.utils import *
 
-print('Starting the capture process. Press and hold (q) to exit the script')
-print('Push (s) to save the image you want and push (c) to see next frame without saving the image \n\n')
+print('\n' + '-' * 90)
+print('| Starting the capture process. Press and hold (q) to exit the script.')
+print('| Push (s) to save the image you want and push (c) to see next frame without saving the image.')
+print('-' * 90 + '\n')
 
 
 def Main():
@@ -54,6 +58,9 @@ def Main():
     CamR = cv2.VideoCapture(1)  # 1 -> Right Camera
     CamL = cv2.VideoCapture(0)  # 2 -> Left Camera
 
+    # validate_im_size(stereopair=(CamL,CamR))
+    set_image_res(pair=(CamL, CamR))  # default (width,height) = (640,480)
+
     with tqdm(total=noOfClickedImages) as pbar:
         while imageCount <= noOfClickedImages:
             # read frame-by-frame from the video feed
@@ -69,7 +76,8 @@ def Main():
             grayL = cv2.cvtColor(frameL, cv2.COLOR_BGR2GRAY)
 
             # Find the chess board corners
-            retR, cornersR = cv2.findChessboardCorners(grayR, (9, 6), None)  # Define the number of chess corners (here 9 by 6) we are looking for with the right Camera
+            retR, cornersR = cv2.findChessboardCorners(grayR, (9, 6),
+                                                       None)  # Define the number of chess corners (here 9 by 6) we are looking for with the right Camera
             retL, cornersL = cv2.findChessboardCorners(grayL, (9, 6), None)  # Same with the left camera
 
             # If chessboard corners are found found, add object points, image points (after refining them)
@@ -99,12 +107,13 @@ def Main():
             # End the Programme
             if cv2.waitKey(1) & 0xFF == ord('q'):  # press and hold 'q' to exit this programm
                 break
-    print('Clicked total {} calibration images'.format(imageCount-1))
+    print('\n[INFO] Clicked total {} calibration images\n\n'.format(imageCount - 1))
 
     # When everything done, release the video capture object and close the display windows
     CamR.release()
     CamL.release()
     cv2.destroyAllWindows()
+
 
 if __name__ == '__main__':
     Main()

@@ -1,7 +1,7 @@
 """
 Calibrate the stereo camera from captured calibration images and save calibration parameters to the directory
 
-usage: inference_captured_video.py [-h] [-n NO_OF_IMAGES] [-dir DIR_PATH]
+usage: CalibrateStereocamera.py [-h] [-images CALIBRATION_IMAGES] [-param CALIBRATION_PARAMETERS]
 
 arguments:
 

@@ -1,21 +1,21 @@
 """
-Capture stereo image pairs with chessboard pattern for calibration
+Capture stereo image pairs for test
 
-usage: CaptureCalibrationImages.py [-h] [-n NO_OF_IMAGES] [-dir DIR_PATH]
+usage: CaptureTestImages.py [-h] [-n NO_OF_IMAGES] [-dir DIR_PATH]
 
 arguments:
 
   -h, --help            show this help message and exit
-  -n No_Of_Images, --no_of_calibration_images NO_OF_IMAGES
-                        Number of calibration images to be captured.
+  -n No_Of_Images, --no_of_test_images NO_OF_IMAGES
+                        Number of test images to be captured.
   -dir Dir_path, --Dir_path DIR_PATH
-                        Path to the folder where captured images will be stored.
+                        Path to the folder where test images will be stored.
 """
 
 from datetime import datetime
 import argparse
 import os
-
+import glob
 import cv2
 from tqdm import tqdm
 from misc.utils import *
@@ -28,30 +28,33 @@ print('-' * 90 + '\n')
 
 def Main():
     parser = argparse.ArgumentParser(
-        description="Capture stereo image pair of chessboard pattern for calibration")
+        description="Capture stereo image pair")
 
     parser.add_argument("-n",
                         "--no_of_images",
-                        help="Defind how much images needs to be clicked for calibration",
-                        type=int, default=20)
+                        help="Defind how much stereo image pairs needs to be clicked",
+                        type=int, default=5)
     parser.add_argument("-dir",
                         "--output_dir",
                         help="Path to the dir where captured stereo images will be stored.",
-                        type=str, default=os.path.join(os.getcwd(), 'calibration_images'))
+                        type=str, default=os.path.join(os.getcwd(), 'test_images'))
 
     args = parser.parse_args()
 
     imageCount = 1
     noOfClickedImages = args.no_of_images
+
     now = datetime.now()
     dateTime = now.strftime("%d-%m-%Y_%H.%M.%S")
+    testImageDir = args.output_dir
+    testImages = os.listdir(testImageDir)
 
-    if not os.path.isdir(args.output_dir):
-        os.mkdir(args.output_dir)
-    calibrationImadeDir = os.path.join(args.output_dir, dateTime)
-    os.mkdir(calibrationImadeDir)
+    if testImages:
+        img_id = int(((testImages[-1]).strip('.jpg')).split("_")[-1]) + 1
+    else:
+        img_id = 1
 
-    print('[INFO]: clicked images will be saved at "{}" dir'.format(calibrationImadeDir))
+    print('[INFO]: clicked images will be saved at "{}" dir'.format(testImageDir))
 
     criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
 
@@ -71,36 +74,17 @@ def Main():
             cv2.imshow('right image', frameR)
             cv2.imshow('left image', frameL)
 
-            # convert images to greyscale
-            grayR = cv2.cvtColor(frameR, cv2.COLOR_BGR2GRAY)
-            grayL = cv2.cvtColor(frameL, cv2.COLOR_BGR2GRAY)
-
-            # Find the chess board corners
-            retR, cornersR = cv2.findChessboardCorners(grayR, (9, 6),
-                                                       None)  # Define the number of chess corners (here 9 by 6) we are looking for with the right Camera
-            retL, cornersL = cv2.findChessboardCorners(grayL, (9, 6), None)  # Same with the left camera
-
             # If chessboard corners are found found, add object points, image points (after refining them)
             if (retR == True) & (retL == True):
-                corners2R = cv2.cornerSubPix(grayR, cornersR, (11, 11), (-1, -1), criteria)  # Refining the Position
-                corners2L = cv2.cornerSubPix(grayL, cornersL, (11, 11), (-1, -1), criteria)
-
-                # Draw and display the corners
-                cv2.drawChessboardCorners(grayR, (9, 6), corners2R, retR)
-                cv2.drawChessboardCorners(grayL, (9, 6), corners2L, retL)
-
-                cv2.imshow('Right image corners', grayR)
-                cv2.imshow('Left image corners', grayL)
-
                 if cv2.waitKey(0) & 0xFF == ord('s'):  # press "s" to save the images and "c" if you don't want to
                     pbar.update()
-                    str_id_image = '{:02d}'.format(imageCount)
-                    cv2.imwrite(calibrationImadeDir + '/right_' + str_id_image + '.jpg',
+                    str_id_image = '{:02d}'.format(img_id)
+                    cv2.imwrite(testImageDir + '/right_' + str_id_image + '.jpg',
                                 frameR)  # Save the image in the file at the provided image directory
-                    cv2.imwrite(calibrationImadeDir + '/left_' + str_id_image + '.jpg', frameL)
+                    cv2.imwrite(testImageDir + '/left_' + str_id_image + '.jpg', frameL)
                     # print('images saved')
-                    imageCount = imageCount + 1
-
+                    imageCount += 1
+                    img_id += 1
                 else:
                     pass
 

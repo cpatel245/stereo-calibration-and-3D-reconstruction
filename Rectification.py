@@ -14,7 +14,9 @@ import argparse
 # load the test images and saved calibration parameters from the directory
 # TODO: Change the directories according to use
 testImageDir = os.path.join(os.getcwd(), 'test_images')
-calibrationParameters = os.path.join(os.getcwd(), 'calibration_parameters')
+Parameters = os.path.join(os.getcwd(), 'calibration_parameters')
+calibrationParameters = str(glob.glob(Parameters + '/*')[-1])
+print(f"\n\n[INFO] Loading Calibration parameters from '{calibrationParameters}' directory...")
 
 left_image_list = glob.glob(testImageDir + '/left_*.jpg')
 right_iamge_list = glob.glob(testImageDir + '/right_*.jpg')

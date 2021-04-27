@@ -12,14 +12,16 @@ The chessboard pattern `pattern.png` is included in the repository. or download 
 
 
 # Requirements
-####Intstall below packages using pip. 
+
+### Intstall below packages using pip. 
+
 - Two webcams or stereo camera
 - numpy==1.16.6
 - opencv-python==4.4.0.46
 - matplotlib
 
 
-#Steps
+# Steps
 
 1. Print the chessboard pattern and paste it on a hard surface  
 2. Fabricate stereo camera pair and fix it on a hard board, so it is fixed and does not move while using
